@@ -37,3 +37,15 @@ max_connections=2000
 ```code
 k6 run app.js
 ```
+
+## prometheus metrics
+
+* view result
+
+```code
+http://localhost:3000
+```
+
+* load dashboard 
+
+> inside dash
