@@ -1,0 +1,1 @@
+FROM dalongrong/haproxy:2.6-debian-quic

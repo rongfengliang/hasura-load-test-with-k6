@@ -1,0 +1,114 @@
+version: '3.6'
+services:
+  grafana:
+    image: grafana/grafana
+    ports:
+    - "3000:3000"
+  prometheus:
+    image: prom/prometheus
+    volumes:
+    - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+    - "9090:9090" 
+  pgexporter:
+    image: wrouesnel/postgres_exporter:latest
+    ports:
+    - 9187:9187
+    environment:
+    - DATA_SOURCE_NAME=postgresql://postgres:postgrespassword@postgres:5432/postgres?sslmode=disable
+  postgres:
+    image: postgres:12
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+    - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+  haproxy:
+     build: 
+      context: ./
+      dockerfile: ./Dockerfile-haproxy
+     ports:
+     - 8080:8080
+     - 8404:8404
+     volumes:
+       - "./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
+  graphql-engine:
+    image: dalongrong/graphql-engine:v2.8.3
+    build: ./
+    privileged: true
+    cap_add:
+      - ALL
+    # ports:
+    # - "8080:8080"
+    depends_on:
+    - "postgres"
+    restart: always
+    environment:
+      ## postgres database to store Hasura metadata
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
+      PG_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false" # set to "false" to disable console
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "false"
+      HASURA_GRAPHQL_EVENTS_HTTP_POOL_SIZE: 500
+      #HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## uncomment next line to set an admin secret
+      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+  graphql-engine2:
+    image: dalongrong/graphql-engine:v2.8.3
+    build: ./
+    privileged: true
+    cap_add:
+      - ALL
+    # ports:
+    # - "8080:8080"
+    depends_on:
+    - "postgres"
+    restart: always
+    environment:
+      ## postgres database to store Hasura metadata
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
+      PG_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false" # set to "false" to disable console
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "false"
+      HASURA_GRAPHQL_EVENTS_HTTP_POOL_SIZE: 500
+      #HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## uncomment next line to set an admin secret
+      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+  graphql-engine3:
+    image: dalongrong/graphql-engine:v2.8.3
+    build: ./
+    privileged: true
+    cap_add:
+      - ALL
+    # ports:
+    # - "8080:8080"
+    depends_on:
+    - "postgres"
+    restart: always
+    environment:
+      ## postgres database to store Hasura metadata
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
+      PG_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false" # set to "false" to disable console
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "false"
+      HASURA_GRAPHQL_EVENTS_HTTP_POOL_SIZE: 500
+      #HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## uncomment next line to set an admin secret
+      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+volumes:
+  db_data:
+
