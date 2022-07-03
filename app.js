@@ -4,8 +4,14 @@ import { sleep, group,check } from 'k6'
 import http from 'k6/http'
 
 export const options = {
-  vus: 1000,
-  duration: '100s',
+  stages: [
+    { duration: '1m', target: 10 }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
+    { duration: '2m', target: 100 }, // stay at 100 users for 10 minutes
+    { duration: '5m', target: 0 }, // ramp-down to 0 users
+  ],
+  thresholds: { http_req_duration: ['avg<1500', 'p(95)<200'] },
+  //noConnectionReuse: true,
+  userAgent: 'MyK6UserAgentString/1.0',
 }
 
 export default function main() {
